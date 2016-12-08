@@ -41,13 +41,13 @@ from bsxprinter.generator import Generator, Receipt
 from bsxprinter.formatters import FileFormatter, XMLFormatter
 
 receipt = Receipt()
-receipt.addItem('Item 1', 99, 1, 23).addItem('Item 2', 149.95, 2, 23)
+receipt.add_item('Item 1', 99, 1, 23).add_item('Item 2', 149.95, 2, 23)
 
 gen = Generator(FileFormatter)
-print(gen.genReceipt(receipt, cash=500))
-print(gen.genReceipt(receipt, card=700))
+print(gen.gen_receipt(receipt, cash=500))
+print(gen.gen_receipt(receipt, card=700))
 
 gen = Generator(XMLFormatter)
-print(gen.genReceipt(receipt, rid='receipt-id-123', cash=500))
+print(gen.gen_receipt(receipt, rid='receipt-id-123', cash=500))
 
 ```

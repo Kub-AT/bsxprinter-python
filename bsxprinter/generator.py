@@ -9,8 +9,8 @@ class Generator(object):
     def __init__(self, formatter):
         self.formatter = formatter()
 
-    def genReceipt(self, items, **kwargs):
-        return self.formatter.genReceipt(items, **kwargs)
+    def gen_receipt(self, items, **kwargs):
+        return self.formatter.gen_receipt(items, **kwargs)
 
 
 class Receipt(object):
@@ -22,7 +22,7 @@ class Receipt(object):
     def __iter__(self):
         return iter(self.items)
 
-    def addItem(self, name, price, amount, vat):
+    def add_item(self, name, price, amount, vat):
         self.items.append({
             'name': str(name),
             'price': str(price),
