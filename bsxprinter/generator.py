@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from decimal import Decimal
 
 class Generator(object):
     formatter = None
@@ -25,8 +26,8 @@ class Receipt(object):
     def add_item(self, name, price, amount, vat):
         self.items.append({
             'name': str(name),
-            'price': str(price),
-            'amount': str(amount),
-            'vat': str(vat)
+            'price': Decimal(price).quantize(Decimal('.00')),
+            'amount': Decimal(amount).quantize(Decimal('0')),
+            'vat': Decimal(vat).quantize(Decimal('0'))
         })
         return self

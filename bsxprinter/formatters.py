@@ -6,6 +6,8 @@ import abc
 import datetime
 import six
 
+from decimal import Decimal
+
 from lxml import etree
 
 
@@ -44,22 +46,25 @@ class FileFormatter(FormatterBase):
     def gen_receipt(self, items, cash=None, card=None):
         command = ''
         command += self.create_cmd('RECEIPT')
-        total = 0
+        total = Decimal(0)
         for item in items:
-            command += self.create_cmd('ITEM', self._get_item_params(item))
-            total += float(item['price']) * \
-                float(item['amount'])  # TODO Decimal
+            params = self._get_item_params(item)
+            command += self.create_cmd('ITEM', params)
+            total += params[4]
 
-        command += self.create_cmd('COMMIT', [total, cash, card])
+        command += self.create_cmd('COMMIT', [total.quantize(Decimal('.00')), cash, card])
         """ Plik .in na FTP powinnien konczyć się poleceniem EXECUTE"""
         command += self.create_cmd('EXECUTE')
         return command
 
     def _get_item_params(self, item):
-        item_params = [item['name'], item[
-            'price'], item['amount'], item['vat']]
-        item_params.append(float(item['price']) * float(item['amount']))
-        return item_params
+        return [
+            item['name'],
+            item['price'],
+            item['amount'],
+            item['vat'],
+            item['price'] * item['amount']
+        ]
 
 
 class TCPFormatter(FormatterBase):
@@ -84,15 +89,14 @@ class XMLFormatter(FormatterBase):
         root = etree.Element('root')
         receipts = etree.Element('receipts')
 
-        total = 0
+        total = Decimal(0)
         xml_items = []
         for item in items:
             item_params = self._item_params(item)
-            total += float(item_params['total'])
+            total += Decimal(item_params['total'])
             xml_items.append(etree.Element('item', **item_params))
 
-        receipt = etree.Element(
-            'receipt', **self._receipt_params(rid, total, cash, card))
+        receipt = etree.Element('receipt', **self._receipt_params(rid, total, cash, card))
         receipt.extend(xml_items)
 
         receipts.append(receipt)
@@ -104,7 +108,7 @@ class XMLFormatter(FormatterBase):
         params = {
             'id': str(rid),
             'total': str(total),
-            'date': datetime.datetime.now().strftime('%Y-%m-%d')
+            'date': str(datetime.date.today())
         }
         if cash:
             params['cash'] = str(cash)
@@ -116,9 +120,9 @@ class XMLFormatter(FormatterBase):
 
     def _item_params(self, item):
         return {
-            'name': item['name'],
-            'price': item['price'],
-            'quantity': item['amount'],
-            'total': str(float(item['price']) * float(item['amount'])),
-            'vatrate': item['vat']
+            'name': str(item['name']),
+            'price': str(item['price']),
+            'quantity': str(item['amount']),
+            'total': str(item['price'] * item['amount']),
+            'vatrate': str(item['vat'])
         }
