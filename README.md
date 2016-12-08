@@ -37,17 +37,17 @@ make test
 # Example
 
 ```python
-from bsxprinter.generator import Generator, Receipt
+from bsxprinter.generator import ReceiptGenerator, Receipt
 from bsxprinter.formatters import FileFormatter, XMLFormatter
 
 receipt = Receipt()
 receipt.add_item('Item 1', 99, 1, 23).add_item('Item 2', 149.95, 2, 23)
 
-gen = Generator(FileFormatter)
-print(gen.gen_receipt(receipt, cash=500))
-print(gen.gen_receipt(receipt, card=700))
+gen = ReceiptGenerator(FileFormatter)
+print(gen.generate(receipt, cash=500))
+print(gen.generate(receipt, card=700))
 
-gen = Generator(XMLFormatter)
-print(gen.gen_receipt(receipt, rid='receipt-id-123', cash=500))
+gen = ReceiptGenerator(XMLFormatter)
+print(gen.generate(receipt, rid='receipt-id-123', cash=500))
 
 ```

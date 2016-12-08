@@ -4,14 +4,14 @@ from __future__ import absolute_import, unicode_literals
 
 from decimal import Decimal
 
-class Generator(object):
+class ReceiptGenerator(object):
     formatter = None
 
     def __init__(self, formatter):
         self.formatter = formatter()
 
-    def gen_receipt(self, items, **kwargs):
-        return self.formatter.gen_receipt(items, **kwargs)
+    def generate(self, items, **kwargs):
+        return self.formatter.generate(items, **kwargs)
 
 
 class Receipt(object):

@@ -15,7 +15,7 @@ from lxml import etree
 class FormatterBase(object):
 
     @abc.abstractmethod
-    def gen_receipt(self, items, **kwargs):
+    def generate(self, items, **kwargs):
         """Metoda generująca dane paragonu"""
         return
 
@@ -43,7 +43,7 @@ class FileFormatter(FormatterBase):
                 result += '{0}{1}'.format(self.separator, str(params))
         return result
 
-    def gen_receipt(self, items, cash=None, card=None):
+    def generate(self, items, cash=None, card=None):
         command = ''
         command += self.create_cmd('RECEIPT')
         total = Decimal(0)
@@ -73,7 +73,7 @@ class TCPFormatter(FormatterBase):
     """
     separator = '#'
 
-    def gen_receipt(self, items, cash=None, card=None):
+    def generate(self, items, cash=None, card=None):
         """TODO"""
 
 
@@ -84,7 +84,7 @@ class XMLFormatter(FormatterBase):
     do wydruku.
     """
 
-    def gen_receipt(self, items, rid, cash=None, card=None):
+    def generate(self, items, rid, cash=None, card=None):
         header = '<?xml version="1.0" encoding="utf-8"?>\n\n'
         root = etree.Element('root')
         receipts = etree.Element('receipts')
