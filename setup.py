@@ -8,9 +8,9 @@ with open('requirements.txt') as f:
     requirements = [line.strip() for line in f.readlines()]
 
 setup(
-    name='bsxprinter'
+    name='bsxprinter',
     version=bsxprinter.__version__,
-    description='BSX Printer Python Lib'
+    description='BSX Printer Python Lib',
     url='https://github.com/Kub-AT/bsxprinter-python',
     download_url='https://github.com/Kub-AT/bsxprinter-python/releases',
     license="MIT",
