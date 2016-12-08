@@ -10,7 +10,7 @@ from lxml import etree
 
 
 @six.add_metaclass(abc.ABCMeta)
-class BSXPrinterFormatterBase(object):
+class FormatterBase(object):
 
     @abc.abstractmethod
     def genReceipt(self, items, **kwargs):
@@ -23,7 +23,7 @@ class BSXPrinterFormatterBase(object):
         return str(s)
 
 
-class BSXPrinterFileFormatter(BSXPrinterFormatterBase):
+class FileFormatter(FormatterBase):
     """
     Generowany format służy do komunikacji z BSX Printer za pośrednictwem FTP lub innej
     przestrzeni współdzielone. Wygenerowany output można zapisać jako plik .in na takiej
@@ -62,7 +62,7 @@ class BSXPrinterFileFormatter(BSXPrinterFormatterBase):
         return item_params
 
 
-class BSXPrinterTCPFormatter(BSXPrinterFormatterBase):
+class TCPFormatter(FormatterBase):
     """
     Generowany format służy do komunikacji z BSX Printer za pośrednictwem TCP.
     """
@@ -72,7 +72,7 @@ class BSXPrinterTCPFormatter(BSXPrinterFormatterBase):
         """TODO"""
 
 
-class BSXPrinterXMLFormatter(BSXPrinterFormatterBase):
+class XMLFormatter(FormatterBase):
     """
     Generowany format służy do komunikacji z BSX Printer za pośrednictwem odpytywanej
     końcówki API XML, z której to co pewien czas BSX Printer stara się pobrać nowe recepty

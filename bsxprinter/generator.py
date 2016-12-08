@@ -3,7 +3,7 @@
 from __future__ import absolute_import, unicode_literals
 
 
-class BSXGenerator(object):
+class Generator(object):
     formatter = None
 
     def __init__(self, formatter):
@@ -13,7 +13,7 @@ class BSXGenerator(object):
         return self.formatter.genReceipt(items, **kwargs)
 
 
-class BSXPrinterReceipt(object):
+class Receipt(object):
     items = None
 
     def __init__(self):

@@ -3,14 +3,14 @@ from __future__ import absolute_import, unicode_literals
 
 import unittest
 
-from bsxprinter.generator import BSXGenerator, BSXPrinterReceipt
-from bsxprinter.formatters import BSXPrinterFileFormatter, BSXPrinterXMLFormatter
+from bsxprinter.generator import Generator, Receipt
+from bsxprinter.formatters import XMLFormatter
 
 
 class TestStringMethods(unittest.TestCase):
 
     def test_receipt_add_item(self):
-        receipt = BSXPrinterReceipt()
+        receipt = Receipt()
         receipt.addItem('Item 1', 19, 1, 23)
         self.assertEqual(len(receipt.items), 1)
         receipt.addItem('Item 2', 99, 1, 23).addItem('Item 3', 149.95, 2, 23)
