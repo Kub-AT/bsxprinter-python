@@ -1,0 +1,4 @@
+include *.md
+include LICENSE requirements.txt
+recursive-include docs *
+prune docs/build
