@@ -43,16 +43,19 @@ class FileFormatter(FormatterBase):
                 result += '{0}{1}'.format(self.separator, str(params))
         return result
 
-    def generate(self, items, cash=None, card=None):
+    def generate(self, receipts):
         command = ''
-        command += self.create_cmd('RECEIPT')
-        total = Decimal(0)
-        for item in items:
-            params = self._get_item_params(item)
-            command += self.create_cmd('ITEM', params)
-            total += params[4]
+        for receipt in receipts:
+            items = receipt.items
+            command += self.create_cmd('RECEIPT')
+            total = Decimal(0)
+            for item in items:
+                params = self._get_item_params(item)
+                command += self.create_cmd('ITEM', params)
+                total += params[4]
 
-        command += self.create_cmd('COMMIT', [total.quantize(Decimal('.00')), cash, card])
+            commit_params = [total.quantize(Decimal('.00')), receipt.cash, receipt.card]
+            command += self.create_cmd('COMMIT', commit_params)
         """ Plik .in na FTP powinnien konczyć się poleceniem EXECUTE"""
         command += self.create_cmd('EXECUTE')
         return command
@@ -73,7 +76,7 @@ class TCPFormatter(FormatterBase):
     """
     separator = '#'
 
-    def generate(self, items, cash=None, card=None):
+    def generate(self, receipts):
         """TODO"""
 
 
@@ -84,38 +87,41 @@ class XMLFormatter(FormatterBase):
     do wydruku.
     """
 
-    def generate(self, items, rid, cash=None, card=None):
+    def generate(self, receipts):
         header = '<?xml version="1.0" encoding="utf-8"?>\n\n'
-        root = etree.Element('root')
-        receipts = etree.Element('receipts')
+        root_xml = etree.Element('root')
+        receipts_xml = etree.Element('receipts')
 
-        total = Decimal(0)
-        xml_items = []
-        for item in items:
-            item_params = self._item_params(item)
-            total += Decimal(item_params['total'])
-            xml_items.append(etree.Element('item', **item_params))
+        for receipt in receipts:
+            items = receipt.items
 
-        receipt = etree.Element('receipt', **self._receipt_params(rid, total, cash, card))
-        receipt.extend(xml_items)
+            total = Decimal(0)
+            xml_items = []
+            for item in items:
+                item_params = self._item_params(item)
+                total += Decimal(item_params['total'])
+                xml_items.append(etree.Element('item', **item_params))
 
-        receipts.append(receipt)
-        root.append(receipts)
+            receipt_xml = etree.Element('receipt', **self._receipt_params(receipt, total))
+            receipt_xml.extend(xml_items)
 
-        return header + etree.tostring(root, pretty_print=True).decode('utf-8')
+            receipts_xml.append(receipt_xml)
+        root_xml.append(receipts_xml)
 
-    def _receipt_params(self, rid, total, cash=None, card=None, rest=None):
+        return header + etree.tostring(root_xml, pretty_print=True).decode('utf-8')
+
+    def _receipt_params(self, receipt, total):
         params = {
-            'id': str(rid),
+            'id': str(receipt.rid),
             'total': str(total),
             'date': str(datetime.date.today())
         }
-        if cash:
-            params['cash'] = str(cash)
-        if card:
-            params['visa'] = str(card)
-        if rest:
-            params['rest'] = str(rest)
+        if receipt.cash:
+            params['cash'] = str(receipt.cash)
+        if receipt.card:
+            params['visa'] = str(receipt.card)
+        if receipt.rest:
+            params['rest'] = str(receipt.rest)
         return params
 
     def _item_params(self, item):

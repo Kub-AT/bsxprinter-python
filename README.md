@@ -40,14 +40,19 @@ make test
 from bsxprinter.generator import ReceiptGenerator, Receipt
 from bsxprinter.formatters import FileFormatter, XMLFormatter
 
-receipt = Receipt()
-receipt.add_item('Item 1', 99, 1, 23).add_item('Item 2', 149.95, 2, 23)
+ff_gen = ReceiptGenerator(FileFormatter)
+xml_gen = ReceiptGenerator(XMLFormatter)
+rec1 = Receipt('receipt-id-1', card=500)
+rec1.add_item('Item 1', 99, 1, 23).add_item('Item 2', 149.95, 2, 23)
 
-gen = ReceiptGenerator(FileFormatter)
-print(gen.generate(receipt, cash=500))
-print(gen.generate(receipt, card=700))
+rec2 = Receipt('receipt-id-2', cash=100)
+rec2.add_item('Item A', 23, 3, 23)
+rec2.add_item('Item B', 11, 1, 8)
 
-gen = ReceiptGenerator(XMLFormatter)
-print(gen.generate(receipt, rid='receipt-id-123', cash=500))
+receipts = [rec1, rec2]
+
+print(ff_gen.generate(receipts))
+print('\n')
+print(xml_gen.generate(receipts))
 
 ```
