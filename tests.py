@@ -1,5 +1,6 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, unicode_literals
+from __future__ import absolute_import, unicode_literals, print_function
 
 import unittest
 
@@ -20,8 +21,11 @@ class ReceiptTest(unittest.TestCase):
     def test_is_should_iter_over_items(self):
         receipt = Receipt(1)
         receipt.add_item('Item 2', 99, 1, 23).add_item('Item 3', 149.95, 2, 23)
-        for r in receipt:
-            pass
+        try:
+            iter(receipt)
+        except TypeError:
+            self.fail("Receipt should be iterable")
+
 
 class GeneratorTest(unittest.TestCase):
 

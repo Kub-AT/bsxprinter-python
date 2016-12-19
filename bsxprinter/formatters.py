@@ -15,7 +15,7 @@ from lxml import etree
 class FormatterBase(object):
 
     @abc.abstractmethod
-    def generate(self, items, **kwargs):
+    def generate(self, receipts):
         """Metoda generująca dane paragonu"""
         return
 
@@ -98,11 +98,11 @@ class XMLFormatter(FormatterBase):
             total = Decimal(0)
             xml_items = []
             for item in items:
-                item_params = self._item_params(item)
+                item_params = self._get_item_params(item)
                 total += Decimal(item_params['total'])
                 xml_items.append(etree.Element('item', **item_params))
 
-            receipt_xml = etree.Element('receipt', **self._receipt_params(receipt, total))
+            receipt_xml = etree.Element('receipt', **self._get_receipt_params(receipt, total))
             receipt_xml.extend(xml_items)
 
             receipts_xml.append(receipt_xml)
@@ -110,7 +110,7 @@ class XMLFormatter(FormatterBase):
 
         return header + etree.tostring(root_xml, pretty_print=True).decode('utf-8')
 
-    def _receipt_params(self, receipt, total):
+    def _get_receipt_params(self, receipt, total):
         params = {
             'id': str(receipt.rid),
             'total': str(total),
@@ -124,7 +124,7 @@ class XMLFormatter(FormatterBase):
             params['rest'] = str(receipt.rest)
         return params
 
-    def _item_params(self, item):
+    def _get_item_params(self, item):
         return {
             'name': str(item['name']),
             'price': str(item['price']),
